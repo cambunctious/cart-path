@@ -4,13 +4,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class MasterList extends AppCompatActivity {
+import java.util.ArrayList;
+public class MasterList extends AppCompatActivity
+{
+    private ArrayList<String>masterList;
+    private ArrayAdapter<String>adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_master_list);
+        masterList.add("test");
+        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,masterList);
+        ListView list = (ListView)findViewById(R.id.listView);
+        list.setAdapter(adapter);
     }
 
     @Override
@@ -33,5 +43,21 @@ public class MasterList extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /*
+      Iterates through master list to find item and removes the item from the ArrayList
+     */
+    public void removeItem(ArrayList<String>master,String item)
+    {
+
+    }
+
+    /*
+        Adds item to master list
+     */
+    public void addItem()
+    {
+
     }
 }
