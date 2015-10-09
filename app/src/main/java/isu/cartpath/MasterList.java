@@ -1,24 +1,25 @@
 package isu.cartpath;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import java.util.ArrayList;
+
 public class MasterList extends AppCompatActivity
 {
-    private ArrayList<String>masterList;
-    private ArrayAdapter<String>adapter;
+    //private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_master_list);
-        masterList.add("test");
-        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,masterList);
+        ArrayList<Item> items = new ArrayList<>();
+        items.add(new Item("potato"));
+        items.add(new Item("marshmallow"));
+        items.add(new Item("doughnut"));
+        ItemListAdapter adapter = new ItemListAdapter(this, android.R.layout.simple_list_item_1, items);
         ListView list = (ListView)findViewById(R.id.listView);
         list.setAdapter(adapter);
     }
