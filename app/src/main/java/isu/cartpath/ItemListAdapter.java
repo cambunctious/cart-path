@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 
@@ -26,9 +27,17 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.list_item, parent, false);
         CheckBox chk = (CheckBox)rowView.findViewById(R.id.cartCheck);
-        Item item = items.get(position);
-        chk.setText(item.name);
-        chk.setChecked(item.inCart);
+        EditText editText = (EditText)rowView.findViewById(R.id.itemName);
+        if(position < items.size()) { // last item for inserting a new item
+            Item item = items.get(position);
+            chk.setChecked(item.inCart);
+            editText.setText(item.name);
+        }
         return rowView;
+    }
+
+    @Override
+    public int getCount() {
+        return items.size() + 1;
     }
 }
