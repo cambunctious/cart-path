@@ -1,11 +1,11 @@
 package isu.cartpath;
 
-public class Item {
-    boolean inCart;
-    String name;
+class Item {
+    private boolean inCart;
+    private String name;
 
-    Item(String name) {
+    Item(String name, boolean inCart) {
         this.name = name;
-        this.inCart = false;
+        this.inCart = inCart;
     }
 }
