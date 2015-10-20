@@ -11,14 +11,28 @@
     android:gravity="center"
     tools:context=".MasterList">
 
-    <EditText
-        android:id="@+id/newItem"
-        android:layout_height="wrap_content"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:hint="@string/new_item_hint"
-        android:background="@android:color/transparent"
-        android:singleLine="true"
-        android:imeOptions="actionNext"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/newItem"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="@string/new_item_hint"
+            android:singleLine="true"
+            android:imeOptions="actionNext"/>
+
+        <Button
+            android:id="@+id/addButton"
+            android:onClick="addButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/addButton" />
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/listView"
@@ -30,6 +44,7 @@
         android:id="@+id/clearChecked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/clearChecked"/>
+        android:text="@string/clearChecked"
+        android:onClick="clearChecked"/>
 
 </LinearLayout>

@@ -45,7 +45,7 @@ class ListReaderDbHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
-                null);
+                ListReaderContract.ItemEntry._ID + " DESC");
     }
 
     Item getItem(long id) {
