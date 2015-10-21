@@ -21,9 +21,8 @@ class ListReaderDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + ListReaderContract.ItemEntry.TABLE_NAME;
 
-    // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "ListReader.db";
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "ListReader.db";
 
     public ListReaderDbHelper(CartPath app) {
         super(app, DATABASE_NAME, null, DATABASE_VERSION);

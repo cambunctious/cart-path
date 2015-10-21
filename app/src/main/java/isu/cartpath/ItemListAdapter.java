@@ -10,6 +10,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 class ItemListAdapter extends SimpleCursorAdapter {
+
     private final LayoutInflater inflater;
     private static final int layout = R.layout.list_item;
     private final CartPath app;
