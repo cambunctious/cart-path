@@ -3,21 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:gravity="center">
+    android:gravity="center"
+    android:longClickable="true"
+    android:paddingTop="5sp"
+    android:paddingBottom="5sp"
+    android:onClick="openItem">
 
     <CheckBox
-        android:id="@+id/cartCheck"
+        android:id="@+id/in_cart_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="checkItem"/>
 
-    <EditText
-        android:id="@+id/itemName"
+    <TextView
+        android:id="@+id/item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@android:color/transparent"
-        android:singleLine="true"
-        android:imeOptions="actionDone"/>
+        android:textSize="20sp"
+        android:textColor="@color/black" />
 
 </LinearLayout>

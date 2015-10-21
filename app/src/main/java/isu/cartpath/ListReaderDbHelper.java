@@ -1,11 +1,12 @@
 package isu.cartpath;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 class ListReaderDbHelper extends SQLiteOpenHelper {
+
+    private final CartPath app;
 
     private static final String PRIMARY_KEY = " PRIMARY KEY";
     private static final String TEXT_TYPE = " TEXT";
@@ -24,8 +25,9 @@ class ListReaderDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "ListReader.db";
 
-    public ListReaderDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public ListReaderDbHelper(CartPath app) {
+        super(app, DATABASE_NAME, null, DATABASE_VERSION);
+        this.app = app;
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -37,8 +39,27 @@ class ListReaderDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    String getName(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex((ListReaderContract.ItemEntry.COLUMN_NAME_NAME)));
+    }
+
+    boolean getChecked(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex((ListReaderContract.ItemEntry.COLUMN_NAME_IN_CART))) == 1;
+    }
+
+    public Cursor getItem(long id) {
+        return app.db.query(
+                ListReaderContract.ItemEntry.TABLE_NAME,
+                null,
+                ListReaderContract.ItemEntry._ID + "=" + Long.toString(id),
+                null,
+                null,
+                null,
+                null);
+    }
+
     public Cursor getAllItems() {
-        return getReadableDatabase().query(
+        return app.db.query(
                 ListReaderContract.ItemEntry.TABLE_NAME,
                 null,
                 null,
@@ -48,23 +69,7 @@ class ListReaderDbHelper extends SQLiteOpenHelper {
                 ListReaderContract.ItemEntry._ID + " DESC");
     }
 
-    Item getItem(long id) {
-        SQLiteDatabase db = getReadableDatabase();
-
-        Cursor c = db.query(
-                ListReaderContract.ItemEntry.TABLE_NAME,
-                null,
-                ListReaderContract.ItemEntry._ID + " = " + Long.toString(id),
-                null,
-                null,
-                null,
-                null
-        );
-
-        c.moveToFirst();
-        String name = c.getString(c.getColumnIndex(ListReaderContract.ItemEntry.COLUMN_NAME_NAME));
-        boolean inCart = c.getInt(c.getColumnIndex(ListReaderContract.ItemEntry.COLUMN_NAME_IN_CART)) == 1;
-        c.close();
-        return new Item(name, inCart);
+    public void deleteItem(long id) {
+        app.db.delete(ListReaderContract.ItemEntry.TABLE_NAME, ListReaderContract.ItemEntry._ID + "=" + Long.toString(id), null);
     }
 }
