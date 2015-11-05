@@ -6,27 +6,25 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-class ItemListAdapter extends SimpleCursorAdapter {
+public class AisleAdapter extends SimpleCursorAdapter {
 
     private final LayoutInflater inflater;
-    private static final int layout = R.layout.list_item;
+    private static final int layout = R.layout.aisle;
     private final CartPath app;
-    private final String aisle;
 
-    public ItemListAdapter(Context context, CartPath app, String aisle) {
+    public AisleAdapter(Context context, CartPath app) {
         super(context,
                 layout,
-                app.dbHelper.getAllItems(),
-                new String[]{ListReaderContract.Item.COLUMN_NAME_NAME},
-                new int[]{R.id.item_name},
+                app.dbHelper.getAllAisles(),
+                new String[]{ ListReaderContract.Item._ID },
+                new int[]{ R.id.aisle_title },
                 0);
         this.inflater = LayoutInflater.from(context);
         this.app = app;
-        this.aisle = aisle;
     }
 
     @Override
@@ -37,15 +35,20 @@ class ItemListAdapter extends SimpleCursorAdapter {
     @Override
     public void bindView(@NonNull View view, Context c, @NonNull Cursor cursor) {
         super.bindView(view, c, cursor);
-        CheckBox chk = (CheckBox)view.findViewById(R.id.in_cart_check);
-        boolean checked = app.dbHelper.getChecked(cursor);
-        chk.setChecked(checked);
-        TextView itemName = (TextView)view.findViewById(R.id.item_name);
-        itemName.setText(app.dbHelper.getName(cursor));
+        String aisle = cursor.getString(cursor.getColumnIndex(ListReaderContract.Item._ID));
+        ListView list = (ListView) view.findViewById(R.id.items);
+        ItemListAdapter listAdapter = new ItemListAdapter(c, app, aisle);
+        list.setAdapter(listAdapter);
+    }
+
+    @Override
+    public void setViewText(@NonNull TextView v, String text) {
+        text = "Aisle " + text;
+        super.setViewText(v, text);
     }
 
     public void resetCursor() {
-        swapCursor(app.dbHelper.getAisle(aisle))
+        swapCursor(app.dbHelper.getAllAisles())
                 .close();
     }
 }

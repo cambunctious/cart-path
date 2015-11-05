@@ -1,26 +1,15 @@
 package isu.cartpath;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ContextMenu;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 
 public class MasterList extends AppCompatActivity {
 
-    private ItemListAdapter listAdapter;
+    private AisleAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +18,8 @@ public class MasterList extends AppCompatActivity {
 
         CartPath app = (CartPath) getApplication();
 
-        final ListView list = (ListView) findViewById(R.id.list_view);
-        listAdapter = new ItemListAdapter(this, app);
+        final ListView list = (ListView) findViewById(R.id.list);
+        listAdapter = new AisleAdapter(this, app);
         list.setAdapter(listAdapter);
 
         final EditText editText = (EditText) findViewById(R.id.newItem);
@@ -96,19 +85,15 @@ public class MasterList extends AppCompatActivity {
     private void deleteItem(long id) {
         CartPath app = (CartPath) getApplication();
         app.dbHelper.deleteItem(id);
-        app.db.delete(ListReaderContract.ItemEntry.TABLE_NAME, ListReaderContract.ItemEntry._ID + "=" + Long.toString(id), null);
+        app.db.delete(ListReaderContract.Item.TABLE_NAME, ListReaderContract.Item._ID + "=" + Long.toString(id), null);
         listAdapter.resetCursor();
     }
 
     private void addItem() {
         final EditText editText = (EditText) findViewById(R.id.newItem);
         String name = editText.getText().toString();
-        ContentValues values = new ContentValues();
-        values.put(ListReaderContract.ItemEntry.COLUMN_NAME_NAME, name);
-        values.put(ListReaderContract.ItemEntry.COLUMN_NAME_IN_CART, 0);
         CartPath app = (CartPath) getApplication();
-        app.db.insert(ListReaderContract.ItemEntry.TABLE_NAME, null, values);
-        listAdapter.resetCursor();
+        app.dbHelper.addItem(name);
         editText.setText("");
     }
 
@@ -118,26 +103,25 @@ public class MasterList extends AppCompatActivity {
 
     public void clearChecked(View view) {
         CartPath app = (CartPath) getApplication();
-        app.db.delete(ListReaderContract.ItemEntry.TABLE_NAME, ListReaderContract.ItemEntry.COLUMN_NAME_IN_CART + "=1", null);
+        app.db.delete(ListReaderContract.Item.TABLE_NAME, ListReaderContract.Item.COLUMN_NAME_IN_CART + "=1", null);
         listAdapter.resetCursor();
     }
 
     public void checkItem(View view) {
         CartPath app = (CartPath) getApplication();
         boolean checked = ((CheckBox)view).isChecked();
-        ListView list = (ListView) findViewById(R.id.list_view);
+        ListView list = (ListView) findViewById(R.id.list);
         int position = list.getPositionForView(view);
         long id = list.getAdapter().getItemId(position);
-        SQLiteDatabase db = app.dbHelper.getWritableDatabase();
-        db.execSQL("UPDATE " +
-                ListReaderContract.ItemEntry.TABLE_NAME +
-                " SET " + ListReaderContract.ItemEntry.COLUMN_NAME_IN_CART + "=" + (checked ? "1" : "0") +
-                " WHERE " + ListReaderContract.ItemEntry._ID + "=" + Long.toString(id));
+        app.db.execSQL("UPDATE " +
+                ListReaderContract.Item.TABLE_NAME +
+                " SET " + ListReaderContract.Item.COLUMN_NAME_IN_CART + "=" + (checked ? "1" : "0") +
+                " WHERE " + ListReaderContract.Item._ID + "=" + Long.toString(id));
         listAdapter.resetCursor();
     }
 
     public void openItem(View view) {
-        ListView list = (ListView) findViewById(R.id.list_view);
+        ListView list = (ListView) findViewById(R.id.list);
         int position = list.getPositionForView(view);
         long id = list.getAdapter().getItemId(position);
         Intent intent = new Intent(this, EditItem.class);

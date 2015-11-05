@@ -52,9 +52,9 @@ public class EditItem extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int buttonId) {
                                 String name = newItemName.getText().toString();
                                 ((CartPath) getApplication()).db.execSQL("UPDATE " +
-                                        ListReaderContract.ItemEntry.TABLE_NAME +
-                                        " SET " + ListReaderContract.ItemEntry.COLUMN_NAME_NAME + "='" + name + "'" +
-                                        " WHERE " + ListReaderContract.ItemEntry._ID + "=" + Long.toString(id));
+                                        ListReaderContract.Item.TABLE_NAME +
+                                        " SET " + ListReaderContract.Item.COLUMN_NAME_NAME + "='" + name + "'" +
+                                        " WHERE " + ListReaderContract.Item._ID + "=" + Long.toString(id));
                                 itemName.setText(name);
                             }
                         })
