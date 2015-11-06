@@ -26,6 +26,15 @@ class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(DatabaseContract.Item.SQL_CREATE_TABLE);
         db.execSQL(DatabaseContract.Store.SQL_CREATE_TABLE);
         db.execSQL(DatabaseContract.StoreCategory.SQL_CREATE_TABLE);
+
+        // dummy
+        addStore(db, "Dummy Store", new String[] {
+                "Dairy",
+                "Produce"
+        }, new int[] {
+                1,
+                2
+        });
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -98,6 +107,31 @@ class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DatabaseContract.Item.COLUMN_NAME_IN_CART, 0);
         values.put(DatabaseContract.Item.COLUMN_NAME_AISLE, aisle);
         app.db.insert(DatabaseContract.Item.TABLE_NAME, null, values);
+    }
+
+    public void addStore(SQLiteDatabase db, String storeName, String[] categories, int[] aisles) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseContract.Store.COLUMN_NAME_NAME, storeName);
+        db.insert(DatabaseContract.Store.TABLE_NAME, null, values);
+
+        for(int i = 0; i < categories.length; ++i) {
+            values.clear();
+            values.put(DatabaseContract.StoreCategory.COLUMN_NAME_STORE, storeName);
+            values.put(DatabaseContract.StoreCategory.COLUMN_NAME_CATEGORY, categories[i]);
+            values.put(DatabaseContract.StoreCategory.COLUMN_NAME_AISLE, aisles[i]);
+            db.insert(DatabaseContract.StoreCategory.TABLE_NAME, null, values);
+        }
+    }
+
+    public String[] getCategoriesArray() {
+        Cursor c = getAllCategories();
+        int size = c.getCount();
+        String[] result = new String[size];
+        for(int i = 0; i < size; ++i) {
+            c.moveToPosition(i);
+            result[i] = c.getString(c.getColumnIndex(DatabaseContract.Category.COLUMN_NAME_NAME));
+        }
+        return result;
     }
 
     public Cursor getAllCategories() {

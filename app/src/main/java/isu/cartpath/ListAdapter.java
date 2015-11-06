@@ -58,7 +58,12 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
         //set header text as first char in name
         Cursor item = (Cursor) getItem(position);
         String aisle = item.getString(item.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_AISLE));
-        holder.text.setText("Aisle " + aisle);
+        String text;
+        if(aisle.equals("-1"))
+            text = "Other";
+        else
+            text = "Aisle " + aisle;
+        holder.text.setText(text);
         return convertView;
     }
 
