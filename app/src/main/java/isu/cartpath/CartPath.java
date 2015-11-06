@@ -5,15 +5,15 @@ import android.database.sqlite.SQLiteDatabase;
 
 
 public class CartPath extends Application {
-    ListReaderDbHelper dbHelper;
+    DatabaseHelper dbHelper;
     SQLiteDatabase db;
     SQLiteDatabase knownDB;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        dbHelper = new ListReaderDbHelper(this);
+        dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
-        knownDB = new MyDatabase(this).getReadableDatabase();
+        knownDB = new GroceryKnowledge(this).getReadableDatabase();
     }
 }

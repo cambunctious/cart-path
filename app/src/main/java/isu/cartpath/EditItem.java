@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -37,12 +36,12 @@ public class EditItem extends AppCompatActivity {
     }
 
     public void renameItem(View view) {
+        final CartPath app = (CartPath) getApplication();
         new DialogFragment() {
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                View view = inflater.inflate(R.layout.dialog_rename, null);
+                View view = View.inflate(getApplicationContext(), R.layout.dialog_rename, null);
                 final EditText newItemName = (EditText) view.findViewById(R.id.item_name);
                 newItemName.setText(itemName.getText());
                 builder.setView(view)
@@ -52,9 +51,9 @@ public class EditItem extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int buttonId) {
                                 String name = newItemName.getText().toString();
                                 ((CartPath) getApplication()).db.execSQL("UPDATE " +
-                                        ListReaderContract.Item.TABLE_NAME +
-                                        " SET " + ListReaderContract.Item.COLUMN_NAME_NAME + "='" + name + "'" +
-                                        " WHERE " + ListReaderContract.Item._ID + "=" + Long.toString(id));
+                                        DatabaseContract.Item.TABLE_NAME +
+                                        " SET " + DatabaseContract.Item.COLUMN_NAME_NAME + "='" + name + "'" +
+                                        " WHERE " + DatabaseContract.Item._ID + "=" + Long.toString(id));
                                 itemName.setText(name);
                             }
                         })
