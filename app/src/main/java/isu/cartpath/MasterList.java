@@ -88,8 +88,7 @@ public class MasterList extends AppCompatActivity {
 
     private void deleteItem(long id) {
         CartPath app = (CartPath) getApplication();
-        app.dbHelper.deleteItem(id);
-        app.db.delete(DatabaseContract.Item.TABLE_NAME, DatabaseContract.Item._ID + "=" + Long.toString(id), null);
+        DatabaseHelper.getInstance(app).deleteItem(id);
         listAdapter.resetCursor();
     }
 
@@ -97,7 +96,7 @@ public class MasterList extends AppCompatActivity {
         final EditText editText = (EditText) findViewById(R.id.newItem);
         String name = editText.getText().toString();
         CartPath app = (CartPath) getApplication();
-        app.dbHelper.addItem(name);
+        DatabaseHelper.getInstance(app).addItem(name);
         editText.setText("");
         listAdapter.resetCursor();
     }
@@ -107,21 +106,16 @@ public class MasterList extends AppCompatActivity {
     }
 
     public void clearChecked(View view) {
-        CartPath app = (CartPath) getApplication();
-        app.db.delete(DatabaseContract.Item.TABLE_NAME, DatabaseContract.Item.COLUMN_NAME_IN_CART + "=1", null);
+        DatabaseHelper.getInstance(this).deleteItemsInCart();
         listAdapter.resetCursor();
     }
 
     public void checkItem(View view) {
-        CartPath app = (CartPath) getApplication();
         boolean checked = ((CheckBox)view).isChecked();
         StickyListHeadersListView list = (StickyListHeadersListView) findViewById(R.id.list);
         int position = list.getPositionForView(view);
         long id = list.getAdapter().getItemId(position);
-        app.db.execSQL("UPDATE " +
-                DatabaseContract.Item.TABLE_NAME +
-                " SET " + DatabaseContract.Item.COLUMN_NAME_IN_CART + "=" + (checked ? "1" : "0") +
-                " WHERE " + DatabaseContract.Item._ID + "=" + Long.toString(id));
+        DatabaseHelper.getInstance(this).setItemInCart(id, checked);
         listAdapter.resetCursor();
     }
 

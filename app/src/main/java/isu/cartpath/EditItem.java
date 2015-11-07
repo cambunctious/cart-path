@@ -22,21 +22,19 @@ public class EditItem extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
 
-        final CartPath app = (CartPath) getApplication();
-
         Intent intent = getIntent();
         id = intent.getLongExtra("id", -1);
 
-        Cursor item = app.dbHelper.getItem(id);
+        DatabaseHelper db = DatabaseHelper.getInstance(this);
+        Cursor item = db.getItem(id);
         item.moveToFirst();
 
         itemName = (TextView) findViewById(R.id.item_name);
-        itemName.setText(app.dbHelper.getName(item));
+        itemName.setText(db.getName(item));
         item.close();
     }
 
     public void renameItem(View view) {
-        final CartPath app = (CartPath) getApplication();
         new DialogFragment() {
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -44,16 +42,14 @@ public class EditItem extends AppCompatActivity {
                 View view = View.inflate(getApplicationContext(), R.layout.dialog_rename, null);
                 final EditText newItemName = (EditText) view.findViewById(R.id.item_name);
                 newItemName.setText(itemName.getText());
+                newItemName.setSelection(newItemName.getText().length());
                 builder.setView(view)
                         .setTitle(R.string.rename_title)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int buttonId) {
                                 String name = newItemName.getText().toString();
-                                ((CartPath) getApplication()).db.execSQL("UPDATE " +
-                                        DatabaseContract.Item.TABLE_NAME +
-                                        " SET " + DatabaseContract.Item.COLUMN_NAME_NAME + "='" + name + "'" +
-                                        " WHERE " + DatabaseContract.Item._ID + "=" + Long.toString(id));
+                                DatabaseHelper.getInstance(getActivity()).renameItem(id, name);
                                 itemName.setText(name);
                             }
                         })
@@ -64,7 +60,7 @@ public class EditItem extends AppCompatActivity {
     }
 
     public void deleteItem(View view) {
-        ((CartPath) getApplication()).dbHelper.deleteItem(id);
+        DatabaseHelper.getInstance(this).deleteItem(id);
         finish();
     }
 }

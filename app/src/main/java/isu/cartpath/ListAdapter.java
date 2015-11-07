@@ -15,32 +15,33 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
 
     private final LayoutInflater inflater;
     private static final int layout = R.layout.list_item;
-    private final CartPath app;
+    private Context context;
 
     public ListAdapter(Context context, CartPath app) {
         super(context,
                 layout,
-                app.dbHelper.getAllItems(),
-                new String[]{DatabaseContract.Item.COLUMN_NAME_NAME},
+                DatabaseHelper.getInstance(context).getAllItems(),
+                new String[]{DatabaseHelper.Contract.Item.COLUMN_NAME_NAME},
                 new int[]{R.id.item_name},
                 0);
         this.inflater = LayoutInflater.from(context);
-        this.app = app;
+        this.context = context;
     }
 
     @Override
     public void bindView(@NonNull View view, Context c, @NonNull Cursor cursor) {
         super.bindView(view, c, cursor);
         CheckBox chk = (CheckBox)view.findViewById(R.id.in_cart_check);
-        boolean checked = app.dbHelper.getChecked(cursor);
+        DatabaseHelper db = DatabaseHelper.getInstance(context);
+        boolean checked = db.getChecked(cursor);
         chk.setChecked(checked);
         TextView itemName = (TextView)view.findViewById(R.id.item_name);
-        String name = app.dbHelper.getName(cursor);
+        String name = db.getName(cursor);
         itemName.setText(name);
     }
 
     public void resetCursor() {
-        swapCursor(app.dbHelper.getAllItems())
+        swapCursor(DatabaseHelper.getInstance(context).getAllItems())
                 .close();
     }
 
@@ -57,7 +58,7 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
         }
         //set header text as first char in name
         Cursor item = (Cursor) getItem(position);
-        String aisle = item.getString(item.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_AISLE));
+        String aisle = item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
         String text;
         if(aisle.equals("-1"))
             text = "Other";
@@ -70,7 +71,7 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
     @Override
     public long getHeaderId(int position) {
         Cursor item = (Cursor) getItem(position);
-        String aisle = item.getString(item.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_AISLE));
+        String aisle = item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
         return Long.parseLong(aisle);
     }
 
