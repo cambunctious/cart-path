@@ -62,7 +62,13 @@ public class MasterList extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.cart_path_view)
+        {
+            return true;
+        }
+        if (id == R.id.stores)
+        {
+
             return true;
         }
 
