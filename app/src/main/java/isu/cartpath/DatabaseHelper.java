@@ -136,6 +136,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
+                Contract.Item.COLUMN_NAME_IN_CART + " ASC," +
+                Contract.Item.COLUMN_NAME_AISLE + " ASC," +
                 Contract.Item._ID + " DESC");
     }
 

@@ -56,12 +56,14 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
         } else {
             holder = (HeaderViewHolder) convertView.getTag();
         }
-        //set header text as first char in name
         Cursor item = (Cursor) getItem(position);
+        boolean inCart = item.getInt(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_IN_CART)) == 1;
         String aisle = item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
         String text;
-        if(aisle.equals("-1"))
-            text = "Other";
+        if(inCart)
+            text = "Items in Cart";
+        else if(aisle.equals("-1"))
+            text = "Unknown Aisle";
         else
             text = "Aisle " + aisle;
         holder.text.setText(text);
@@ -71,8 +73,10 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
     @Override
     public long getHeaderId(int position) {
         Cursor item = (Cursor) getItem(position);
-        String aisle = item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
-        return Long.parseLong(aisle);
+        if(item.getInt(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_IN_CART)) == 1)
+            return -2;
+        else
+            return item.getLong(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
     }
 
     class HeaderViewHolder {
