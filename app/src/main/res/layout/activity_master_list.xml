@@ -24,8 +24,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:hint="@string/new_item_hint"
-            android:singleLine="true"
-            android:imeOptions="actionNext"/>
+            android:imeOptions="actionNext"
+            android:singleLine="true" />
 
         <Button
             android:id="@+id/addButton"
