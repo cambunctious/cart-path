@@ -3,12 +3,11 @@ package isu.cartpath;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.*;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class MasterList extends AppCompatActivity {
@@ -26,16 +25,38 @@ public class MasterList extends AppCompatActivity {
         listAdapter = new ListAdapter(this, app);
         list.setAdapter(listAdapter);
 
+        final Button addButton = (Button) findViewById(R.id.addButton);
+        addButton.setEnabled(false);
+
         final EditText editText = (EditText) findViewById(R.id.newItem);
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    addItem();
+                    if(v.length() > 0)
+                        addItem();
                     handled = true;
                 }
                 return handled;
+            }
+        });
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                boolean empty = (charSequence.length() - count + after) == 0;
+                addButton.setEnabled(!empty);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
