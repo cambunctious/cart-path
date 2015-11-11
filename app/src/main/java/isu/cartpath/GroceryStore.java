@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ public class GroceryStore extends AppCompatActivity
 
     public GroceryStore()
     {
+
         categories = new ArrayList<String>();
         helper = DatabaseHelper.getInstance(this);
         String[]temp = helper.getCategoriesArray();
@@ -31,13 +33,14 @@ public class GroceryStore extends AppCompatActivity
         {
             categories.add(temp[i]);
         }
+        
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_store);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         CartPath app = (CartPath) getApplication();
 
 
@@ -54,6 +57,14 @@ public class GroceryStore extends AppCompatActivity
         item.close();
     }
 
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_master_list,menu);
+        return true;
+    }
+
+
+
     public void createStore(View view)
     {
 
@@ -61,6 +72,8 @@ public class GroceryStore extends AppCompatActivity
 
     public void editStore(View view)
     {
+
+        /*
         new DialogFragment() {
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState)
@@ -85,6 +98,7 @@ public class GroceryStore extends AppCompatActivity
                 return builder.create();
             }
         }.show(getFragmentManager(), "rename");
+        */
     }
 
     public void deleteStore(View view)

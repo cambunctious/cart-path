@@ -89,7 +89,8 @@ public class MasterList extends AppCompatActivity {
         }
         if (id == R.id.stores)
         {
-
+            Intent storeIntent = new Intent(this, GroceryStore.class);
+            startActivity(storeIntent);
             return true;
         }
 

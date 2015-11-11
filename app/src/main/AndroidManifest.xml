@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".EditItem"/>
+        <activity android:name=".GroceryStore"/>
     </application>
 
 </manifest>

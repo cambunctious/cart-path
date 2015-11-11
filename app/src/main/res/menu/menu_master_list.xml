@@ -15,8 +15,7 @@
     <item android:id="@+id/stores"
         android:title="Stores"
         android:orderInCategory="102"
-        android:onClick="store"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
 
 
 </menu>
