@@ -17,11 +17,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
         private static final String TEXT_TYPE = " TEXT";
         private static final String INTEGER_TYPE = " INTEGER";
 
-        public static abstract class Category {
-            public static final String TABLE_NAME = "Category";
-            public static final String COLUMN_NAME_NAME = "name";
-        }
-
         public static abstract class Item implements BaseColumns {
             public static final String TABLE_NAME = "Item";
             public static final String COLUMN_NAME_NAME = "name";
@@ -62,7 +57,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
                             COLUMN_NAME_STORE + INTEGER_TYPE +
                             " REFERENCES " + Store.TABLE_NAME + "(" + _ID + ")," +
                             COLUMN_NAME_CATEGORY + INTEGER_TYPE +
-                            " REFERENCES " + Category.TABLE_NAME + "(" + Category.COLUMN_NAME_NAME + ")," +
+                            " REFERENCES " + GroceryKnowledge.Contract.Category.TABLE_NAME + "(" + GroceryKnowledge.Contract.Category.COLUMN_NAME_NAME + ")," +
                             COLUMN_NAME_AISLE + INTEGER_TYPE + ")";
 
             static final String SQL_DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -136,7 +131,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
-                Contract.Item.COLUMN_NAME_IN_CART + " ASC," +
                 Contract.Item.COLUMN_NAME_AISLE + " ASC," +
                 Contract.Item._ID + " DESC");
     }
@@ -166,28 +160,6 @@ class DatabaseHelper extends SQLiteOpenHelper {
             values.put(Contract.StoreCategory.COLUMN_NAME_AISLE, aisles[i]);
             db.insert(Contract.StoreCategory.TABLE_NAME, null, values);
         }
-    }
-
-    public String[] getCategoriesArray() {
-        Cursor c = getAllCategories();
-        int size = c.getCount();
-        String[] result = new String[size];
-        for(int i = 0; i < size; ++i) {
-            c.moveToPosition(i);
-            result[i] = c.getString(c.getColumnIndex(Contract.Category.COLUMN_NAME_NAME));
-        }
-        return result;
-    }
-
-    public Cursor getAllCategories() {
-        return getReadableDatabase().query(
-                Contract.Category.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                Contract.Category.COLUMN_NAME_NAME + " DESC");
     }
 
     public Cursor getAllAisles() {

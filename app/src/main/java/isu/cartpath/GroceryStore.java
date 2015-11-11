@@ -1,16 +1,10 @@
 package isu.cartpath;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,43 +12,20 @@ import java.util.ArrayList;
 
 public class GroceryStore extends AppCompatActivity
 {
-    private ArrayList<String>categories;
+    private ArrayList<String> categories;
     private DatabaseHelper helper;
     private long id;
     private TextView storeName;
-
-    public GroceryStore()
-    {
-
-        categories = new ArrayList<String>();
-        helper = DatabaseHelper.getInstance(this);
-        String[]temp = helper.getCategoriesArray();
-        for(int i = 0;i<temp.length;i++)
-        {
-            categories.add(temp[i]);
-        }
-        
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_store);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         CartPath app = (CartPath) getApplication();
 
 
         Intent intent = getIntent();
-        id = intent.getLongExtra("id", -1);
-
-        DatabaseHelper db = DatabaseHelper.getInstance(this);
-        Cursor item = db.getItem(id);
-        item.moveToFirst();
-
-        storeName = (TextView) findViewById(R.id.item_name);
-        storeName.setText(db.getName(item));
-        new GroceryStore();
-        item.close();
+        String[] categories = GroceryKnowledge.getInstance(this).getCategoriesArray();
     }
 
     public boolean onCreateOptionsMenu(Menu menu)

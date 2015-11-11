@@ -7,13 +7,13 @@
         android:orderInCategory="100"
         app:showAsAction="never" /> -->
 
-    <item android:id="@+id/cart_path_view"
-        android:title="CartView"
+    <item android:id="@+id/aisle_view"
+        android:title="@string/aisle_view"
         android:orderInCategory="101"
         app:showAsAction="never"/>
 
     <item android:id="@+id/stores"
-        android:title="Stores"
+        android:title="@string/stores"
         android:orderInCategory="102"
         app:showAsAction="never"/>
 

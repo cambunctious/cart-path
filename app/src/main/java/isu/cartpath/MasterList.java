@@ -83,7 +83,7 @@ public class MasterList extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.cart_path_view)
+        if (id == R.id.aisle_view)
         {
             return true;
         }
@@ -102,7 +102,7 @@ public class MasterList extends AppCompatActivity {
         int id = view.getId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.cart_path_view)
+        if (id == R.id.aisle_view)
         {
             //startActivity();
         }

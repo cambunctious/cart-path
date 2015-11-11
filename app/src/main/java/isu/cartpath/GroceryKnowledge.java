@@ -9,6 +9,11 @@ public class GroceryKnowledge extends SQLiteAssetHelper {
 
     static class Contract {
 
+		public static abstract class Category {
+			public static final String TABLE_NAME = "Category";
+			public static final String COLUMN_NAME_NAME = "name";
+		}
+
         public static abstract class KnownItem implements BaseColumns {
             public static final String TABLE_NAME = "Item";
             public static final String COLUMN_NAME_NAME = "name";
@@ -45,4 +50,26 @@ public class GroceryKnowledge extends SQLiteAssetHelper {
     public String getItemName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Contract.KnownItem.COLUMN_NAME_CATEGORY));
     }
+
+	public Cursor getAllCategories() {
+		return getReadableDatabase().query(
+				Contract.Category.TABLE_NAME,
+				null,
+				null,
+				null,
+				null,
+				null,
+				Contract.Category.COLUMN_NAME_NAME + " DESC");
+	}
+
+	public String[] getCategoriesArray() {
+		Cursor c = getAllCategories();
+		int size = c.getCount();
+		String[] result = new String[size];
+		for(int i = 0; i < size; ++i) {
+			c.moveToPosition(i);
+			result[i] = c.getString(c.getColumnIndex(Contract.Category.COLUMN_NAME_NAME));
+		}
+		return result;
+	}
 }

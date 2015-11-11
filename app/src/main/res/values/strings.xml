@@ -8,4 +8,6 @@
     <string name="edit">Edit</string>
     <string name="rename_title">Rename Item</string>
     <string name="new_name_hint">New Item Name</string>
+    <string name="stores">Stores</string>
+    <string name="aisle_view">Aisle View</string>
 </resources>
