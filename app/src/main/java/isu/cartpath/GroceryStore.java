@@ -36,7 +36,10 @@ public class GroceryStore extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_item);
+        setContentView(R.layout.activity_edit_store);
+
+        CartPath app = (CartPath) getApplication();
+
 
         Intent intent = getIntent();
         id = intent.getLongExtra("id", -1);
@@ -47,6 +50,7 @@ public class GroceryStore extends AppCompatActivity
 
         storeName = (TextView) findViewById(R.id.item_name);
         storeName.setText(db.getName(item));
+        new GroceryStore();
         item.close();
     }
 
@@ -89,4 +93,6 @@ public class GroceryStore extends AppCompatActivity
         finish();
     }
 
+    public void clearChecked(View view) {
+    }
 }

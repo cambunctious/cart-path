@@ -96,6 +96,22 @@ public class MasterList extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void onClick(View view)
+    {
+        int id = view.getId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.cart_path_view)
+        {
+            //startActivity();
+        }
+        if (id == R.id.stores)
+        {
+            startActivity(new Intent(getApplicationContext(),GroceryStore.class));
+        }
+
+    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -153,5 +169,20 @@ public class MasterList extends AppCompatActivity {
         Intent intent = new Intent(this, EditItem.class);
         intent.putExtra("id", id);
         startActivity(intent);
+    }
+
+    public void store(View view)
+    {
+        //StickyListHeadersListView list = (StickyListHeadersListView) findViewById(R.id.list);
+        //int position = list.getPositionForView(view);
+       // long id = list.getAdapter().getItemId(position);
+        Intent intent = new Intent(this, GroceryStore.class);
+        //intent.putExtra("id", id);
+        startActivity(intent);
+    }
+
+    public void store(MenuItem item)
+    {
+
     }
 }
