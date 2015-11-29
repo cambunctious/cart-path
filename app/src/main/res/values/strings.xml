@@ -10,4 +10,6 @@
     <string name="new_name_hint">New Item Name</string>
     <string name="stores">Stores</string>
     <string name="aisle_view">Aisle View</string>
+    <string name="new_store_hint">New Store Name</string>
+    <string name="cart_path_view">Cart Path</string>
 </resources>
