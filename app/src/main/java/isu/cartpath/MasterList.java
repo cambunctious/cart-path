@@ -12,7 +12,9 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class MasterList extends AppCompatActivity {
 
-    private ListAdapter listAdapter;
+    enum GroceryView { Aisle, Category }
+    GroceryView groceryView = GroceryView.Aisle;
+    private ItemListAdapter itemListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +24,8 @@ public class MasterList extends AppCompatActivity {
         CartPath app = (CartPath) getApplication();
 
         final StickyListHeadersListView list = (StickyListHeadersListView) findViewById(R.id.list);
-        listAdapter = new ListAdapter(this, app);
-        list.setAdapter(listAdapter);
+        itemListAdapter = new ItemListAdapter(this, app);
+        list.setAdapter(itemListAdapter);
 
         final Button addButton = (Button) findViewById(R.id.addButton);
         addButton.setEnabled(false);
@@ -66,51 +68,46 @@ public class MasterList extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        listAdapter.resetCursor();
+        itemListAdapter.resetCursor();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_master_list, menu);
+        MenuItem toggle = menu.findItem(R.id.toggle_view);
+        switch(groceryView) {
+            case Aisle:
+                toggle.setTitle(R.string.category_view);
+                break;
+            case Category:
+                toggle.setTitle(R.string.aisle_view);
+                break;
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.aisle_view)
-        {
-            return true;
-        }
-        if (id == R.id.stores)
-        {
-            Intent storeIntent = new Intent(this, GroceryStore.class);
-            startActivity(storeIntent);
-            return true;
+        switch(item.getItemId()) {
+            case R.id.toggle_view:
+                switch(groceryView) {
+                    case Aisle:
+                        groceryView = GroceryView.Category;
+                        item.setTitle(R.string.aisle_view);
+                        break;
+                    case Category:
+                        groceryView = GroceryView.Aisle;
+                        item.setTitle(R.string.category_view);
+                        break;
+                }
+                itemListAdapter.resetCursor();
+                return true;
+            case R.id.stores:
+                startActivity(new Intent(this, StoresActivity.class));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void onClick(View view)
-    {
-        int id = view.getId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.aisle_view)
-        {
-            //startActivity();
-        }
-        if (id == R.id.stores)
-        {
-            startActivity(new Intent(getApplicationContext(),GroceryStore.class));
-        }
-
     }
 
     @Override
@@ -133,7 +130,7 @@ public class MasterList extends AppCompatActivity {
     private void deleteItem(long id) {
         CartPath app = (CartPath) getApplication();
         DatabaseHelper.getInstance(app).deleteItem(id);
-        listAdapter.resetCursor();
+        itemListAdapter.resetCursor();
     }
 
     private void addItem() {
@@ -142,7 +139,7 @@ public class MasterList extends AppCompatActivity {
         CartPath app = (CartPath) getApplication();
         DatabaseHelper.getInstance(app).addItem(name);
         editText.setText("");
-        listAdapter.resetCursor();
+        itemListAdapter.resetCursor();
     }
 
     public void addButton(View view) {
@@ -151,7 +148,7 @@ public class MasterList extends AppCompatActivity {
 
     public void clearChecked(View view) {
         DatabaseHelper.getInstance(this).deleteItemsInCart();
-        listAdapter.resetCursor();
+        itemListAdapter.resetCursor();
     }
 
     public void checkItem(View view) {
@@ -160,7 +157,7 @@ public class MasterList extends AppCompatActivity {
         int position = list.getPositionForView(view);
         long id = list.getAdapter().getItemId(position);
         DatabaseHelper.getInstance(this).setItemInCart(id, checked);
-        listAdapter.resetCursor();
+        itemListAdapter.resetCursor();
     }
 
     public void openItem(View view) {
@@ -170,20 +167,5 @@ public class MasterList extends AppCompatActivity {
         Intent intent = new Intent(this, EditItem.class);
         intent.putExtra("id", id);
         startActivity(intent);
-    }
-
-    public void store(View view)
-    {
-        //StickyListHeadersListView list = (StickyListHeadersListView) findViewById(R.id.list);
-        //int position = list.getPositionForView(view);
-       // long id = list.getAdapter().getItemId(position);
-        Intent intent = new Intent(this, GroceryStore.class);
-        //intent.putExtra("id", id);
-        startActivity(intent);
-    }
-
-    public void store(MenuItem item)
-    {
-
     }
 }

@@ -11,16 +11,16 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
-class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapter {
+class ItemListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapter {
 
     private final LayoutInflater inflater;
     private static final int layout = R.layout.list_item;
-    private Context context;
+    private final MasterList context;
 
-    public ListAdapter(Context context, CartPath app) {
+    public ItemListAdapter(MasterList context, CartPath app) {
         super(context,
                 layout,
-                DatabaseHelper.getInstance(context).getAllItems(),
+                getCursor(context),
                 new String[]{DatabaseHelper.Contract.Item.COLUMN_NAME_NAME},
                 new int[]{R.id.item_name},
                 0);
@@ -28,11 +28,23 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
         this.context = context;
     }
 
+    private static Cursor getCursor(MasterList context) {
+        DatabaseHelper db = DatabaseHelper.getInstance(context);
+        switch(context.groceryView) {
+            case Aisle:
+                return db.getAllItemsByAisle();
+            case Category:
+                return db.getAllItemsByCategory();
+            default:
+                return null;
+        }
+    }
+
     @Override
     public void bindView(@NonNull View view, Context c, @NonNull Cursor cursor) {
         super.bindView(view, c, cursor);
         CheckBox chk = (CheckBox)view.findViewById(R.id.in_cart_check);
-        DatabaseHelper db = DatabaseHelper.getInstance(context);
+        DatabaseHelper db = DatabaseHelper.getInstance(c);
         boolean checked = db.getChecked(cursor);
         chk.setChecked(checked);
         TextView itemName = (TextView)view.findViewById(R.id.item_name);
@@ -41,8 +53,7 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
     }
 
     public void resetCursor() {
-        swapCursor(DatabaseHelper.getInstance(context).getAllItems())
-                .close();
+        changeCursor(getCursor(context));
     }
 
     @Override
@@ -58,14 +69,25 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
         }
         Cursor item = (Cursor) getItem(position);
         boolean inCart = item.getInt(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_IN_CART)) == 1;
-        String aisle = item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
         String text;
         if(inCart)
             text = "Items in Cart";
-        else if(aisle.equals("-1"))
-            text = "Unknown Aisle";
-        else
-            text = "Aisle " + aisle;
+        else {
+            switch (context.groceryView) {
+                case Aisle:
+                    String aisle = item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
+                    if(aisle.equals("-1"))
+                        text = "Unknown Aisle";
+                    else
+                        text = "Aisle " + aisle;
+                    break;
+                case Category:
+                    text = item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_CATEGORY));
+                    break;
+                default:
+                    text = null;
+            }
+        }
         holder.text.setText(text);
         return convertView;
     }
@@ -75,8 +97,14 @@ class ListAdapter extends SimpleCursorAdapter implements StickyListHeadersAdapte
         Cursor item = (Cursor) getItem(position);
         if(item.getInt(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_IN_CART)) == 1)
             return -2;
-        else
-            return item.getLong(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
+        switch (context.groceryView) {
+            case Aisle:
+                return item.getLong(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_AISLE));
+            case Category:
+                return item.getString(item.getColumnIndex(DatabaseHelper.Contract.Item.COLUMN_NAME_CATEGORY)).hashCode();
+            default:
+                return -1; // unreachable
+        }
     }
 
     class HeaderViewHolder {

@@ -21,7 +21,7 @@ public class GroceryKnowledge extends SQLiteAssetHelper {
         }
     }
 
-	static GroceryKnowledge instance;
+	private static GroceryKnowledge instance;
 
 	private static final String DATABASE_NAME = "cartpath.db";
 	private static final int DATABASE_VERSION = 1;

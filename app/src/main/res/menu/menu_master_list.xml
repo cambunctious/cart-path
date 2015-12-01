@@ -7,10 +7,10 @@
         android:orderInCategory="100"
         app:showAsAction="never" /> -->
 
-    <item android:id="@+id/aisle_view"
-        android:title="@string/aisle_view"
-        android:orderInCategory="101"
-        app:showAsAction="never"/>
+    <item android:id="@+id/toggle_view"
+          android:orderInCategory="101"
+          app:showAsAction="never"
+          tools:ignore="MenuTitle"/>
 
     <item android:id="@+id/stores"
         android:title="@string/stores"

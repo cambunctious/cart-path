@@ -15,7 +15,6 @@ import android.widget.TextView;
 public class EditItem extends AppCompatActivity {
 
     private long id;
-    private TextView itemName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +28,13 @@ public class EditItem extends AppCompatActivity {
         Cursor item = db.getItem(id);
         item.moveToFirst();
 
-        itemName = (TextView) findViewById(R.id.item_name);
+        TextView itemName = (TextView) findViewById(R.id.item_name);
         itemName.setText(db.getName(item));
         item.close();
     }
 
     public void renameItem(View view) {
+        final TextView itemName = (TextView) findViewById(R.id.item_name);
         new DialogFragment() {
             @Override
             public Dialog onCreateDialog(Bundle savedInstanceState) {

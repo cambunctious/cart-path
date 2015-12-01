@@ -22,13 +22,15 @@ class DatabaseHelper extends SQLiteOpenHelper {
             public static final String COLUMN_NAME_NAME = "name";
             public static final String COLUMN_NAME_IN_CART = "inCart";
             public static final String COLUMN_NAME_AISLE = "aisle";
+            public static final String COLUMN_NAME_CATEGORY = "category";
 
             static final String SQL_CREATE_TABLE =
                     "CREATE TABLE " + TABLE_NAME + "(" +
                             _ID + INTEGER_TYPE + PRIMARY_KEY + "," +
                             COLUMN_NAME_NAME + TEXT_TYPE + "," +
                             COLUMN_NAME_IN_CART + INTEGER_TYPE + "," +
-                            COLUMN_NAME_AISLE + INTEGER_TYPE + ")";
+                            COLUMN_NAME_AISLE + INTEGER_TYPE + "," +
+                            COLUMN_NAME_CATEGORY + TEXT_TYPE + ")";
 
             static final String SQL_DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         }
@@ -67,9 +69,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     private final Context context;
 
-    static DatabaseHelper instance;
+    private static DatabaseHelper instance;
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "user.db";
 
     public static DatabaseHelper getInstance(Context context) {
@@ -90,10 +92,38 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
         addStore(db, "Dummy Store", new String[] {
                 "Dairy",
-                "Produce"
+                "Produce",
+                "Baked Goods",
+                "Baking",
+                "Beverages",
+                "Canned Foods",
+                "Cheese",
+                "Condiments",
+                "Dairy",
+                "Frozen Foods",
+                "Meats",
+                "Produce",
+                "Refrigerated Items",
+                "Seafood",
+                "Snacks",
+                "Spices & Herbs"
         }, new int[] {
-                1,
-                2
+                5,
+                12,
+                13,
+                4,
+                15,
+                6,
+                7,
+                8,
+                7,
+                9,
+                10,
+                11,
+                2,
+                3,
+                14,
+                14
         });
     }
 
@@ -104,8 +134,27 @@ class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public long createStore() {
+        ContentValues values = new ContentValues();
+        values.put(Contract.Store.COLUMN_NAME_NAME, "New Store");
+        return getWritableDatabase().insert(
+                Contract.Store.TABLE_NAME,
+                null,
+                values
+        );
+    }
+
     String getName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex((Contract.Item.COLUMN_NAME_NAME)));
+    }
+
+
+    public int getAisle(Cursor c) {
+        return c.getInt(c.getColumnIndex(Contract.StoreCategory.COLUMN_NAME_AISLE));
+    }
+
+    public String getCategory(Cursor c) {
+        return c.getString(c.getColumnIndex(Contract.StoreCategory.COLUMN_NAME_CATEGORY));
     }
 
     boolean getChecked(Cursor cursor) {
@@ -116,14 +165,14 @@ class DatabaseHelper extends SQLiteOpenHelper {
         return getReadableDatabase().query(
                 Contract.Item.TABLE_NAME,
                 null,
-                Contract.Item._ID + "=" + Long.toString(id),
-                null,
+                Contract.Item._ID + "=?",
+                new String[] {Long.toString(id)},
                 null,
                 null,
                 null);
     }
 
-    public Cursor getAllItems() {
+    public Cursor getAllItemsByAisle() {
         return getReadableDatabase().query(
                 Contract.Item.TABLE_NAME,
                 null,
@@ -131,20 +180,39 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
+                Contract.Item.COLUMN_NAME_IN_CART + " ASC," +
                 Contract.Item.COLUMN_NAME_AISLE + " ASC," +
                 Contract.Item._ID + " DESC");
     }
 
+    public Cursor getAllItemsByCategory() {
+        return getReadableDatabase().query(
+                Contract.Item.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Contract.Item.COLUMN_NAME_IN_CART + " ASC," +
+                Contract.Item.COLUMN_NAME_CATEGORY + " ASC," +
+                Contract.Item._ID + " DESC");
+    }
+
     public void deleteItem(long id) {
-        getWritableDatabase().delete(Contract.Item.TABLE_NAME, Contract.Item._ID + "=" + Long.toString(id), null);
+        getWritableDatabase().delete(
+                Contract.Item.TABLE_NAME,
+                Contract.Item._ID + "=?",
+                new String[] {Long.toString(id)});
     }
 
     public void addItem(String name) {
-        String aisle = selectAisle(name);
+        String category = getCategoryForItem(name);
+        String aisle = getAisleForCategory(category);
         ContentValues values = new ContentValues();
         values.put(Contract.Item.COLUMN_NAME_NAME, name);
         values.put(Contract.Item.COLUMN_NAME_IN_CART, 0);
         values.put(Contract.Item.COLUMN_NAME_AISLE, aisle);
+        values.put(Contract.Item.COLUMN_NAME_CATEGORY, category);
         getWritableDatabase().insert(Contract.Item.TABLE_NAME, null, values);
     }
 
@@ -160,6 +228,67 @@ class DatabaseHelper extends SQLiteOpenHelper {
             values.put(Contract.StoreCategory.COLUMN_NAME_AISLE, aisles[i]);
             db.insert(Contract.StoreCategory.TABLE_NAME, null, values);
         }
+    }
+
+    public Cursor getStoreCategories(String store) {
+        return getReadableDatabase().query(
+                Contract.StoreCategory.TABLE_NAME,
+                new String[] {Contract.StoreCategory.COLUMN_NAME_CATEGORY, Contract.StoreCategory.COLUMN_NAME_AISLE},
+                Contract.StoreCategory.COLUMN_NAME_STORE + "=?",
+                new String[] {store},
+                null,
+                null,
+                Contract.StoreCategory.COLUMN_NAME_CATEGORY);
+    }
+
+    public void renameStore(long id, String name) {
+        ContentValues values = new ContentValues();
+        values.put(Contract.Store.COLUMN_NAME_NAME, name);
+        getWritableDatabase().update(
+                Contract.Store.TABLE_NAME,
+                values,
+                Contract.Store._ID + "=?",
+                new String[] {Long.toString(id)}
+        );
+    }
+
+    public void deleteStore(long id) {
+        getWritableDatabase().delete(
+                Contract.Store.TABLE_NAME,
+                Contract.Store._ID + "=" + Long.toString(id),
+                null);
+    }
+
+    public Cursor getStores() {
+        return getReadableDatabase().query(
+                Contract.Store.TABLE_NAME,
+                new String[] {Contract.Store._ID, Contract.Store.COLUMN_NAME_NAME},
+                null,
+                null,
+                null,
+                null,
+                Contract.Store.COLUMN_NAME_NAME);
+    }
+
+    public Store getStore(long id) {
+        Cursor c = getReadableDatabase().query(
+                Contract.Store.TABLE_NAME,
+                new String[] {Contract.Store._ID, Contract.Store.COLUMN_NAME_NAME},
+                Contract.Store._ID + "=?",
+                new String[] {Long.toString(id)},
+                null,
+                null,
+                null);
+        c.moveToFirst();
+        Store store = getStore(c);
+        c.close();
+        return store;
+    }
+
+    public Store getStore(Cursor c) {
+        long id = c.getLong(c.getColumnIndex(Contract.Store._ID));
+        String name = c.getString(c.getColumnIndex(Contract.Store.COLUMN_NAME_NAME));
+        return new Store(id, name);
     }
 
     public Cursor getAllAisles() {
@@ -179,21 +308,24 @@ class DatabaseHelper extends SQLiteOpenHelper {
         return getReadableDatabase().query(
                 Contract.Item.TABLE_NAME,
                 null,
-                Contract.Item.COLUMN_NAME_AISLE + "=" + aisle,
-                null,
+                Contract.Item.COLUMN_NAME_AISLE + "=?",
+                new String[] {aisle},
                 null,
                 null,
                 Contract.Item._ID + " DESC");
     }
 
     public void renameItem(long id, String name) {
-        String aisle = selectAisle(name);
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE " +
-                Contract.Item.TABLE_NAME +
-                " SET " + Contract.Item.COLUMN_NAME_NAME + "='" + name + "'," +
-                    Contract.Item.COLUMN_NAME_AISLE + "=" + aisle +
-                " WHERE " + Contract.Item._ID + "=" + Long.toString(id));
+        String aisle = getAisleForCategory(name);
+        ContentValues values = new ContentValues();
+        values.put(Contract.Item.COLUMN_NAME_NAME, name);
+        values.put(Contract.Item.COLUMN_NAME_AISLE, aisle);
+        getWritableDatabase().update(
+                Contract.Item.TABLE_NAME,
+                values,
+                Contract.Item._ID + "=?",
+                new String[] {Long.toString(id)}
+        );
     }
 
     public void deleteItemsInCart() {
@@ -201,31 +333,42 @@ class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void setItemInCart(long id, boolean checked) {
-        getWritableDatabase().execSQL("UPDATE " +
-                Contract.Item.TABLE_NAME +
-                " SET " + Contract.Item.COLUMN_NAME_IN_CART + "=" + (checked ? "1" : "0") +
-                " WHERE " + Contract.Item._ID + "=" + Long.toString(id));
+        ContentValues values = new ContentValues();
+        values.put(Contract.Item.COLUMN_NAME_IN_CART, checked);
+        getWritableDatabase().update(
+                Contract.Item.TABLE_NAME,
+                values,
+                Contract.Item._ID + "=?",
+                new String[] {Long.toString(id)}
+        );
     }
 
-    public String selectAisle(String name) {
+    public String getCategoryForItem(String name) {
         Cursor likeItems = GroceryKnowledge.getInstance(context).likeItems(name);
-        String aisle = "-1";
+        String category = null;
         if(likeItems.moveToFirst()) {
-            String category = GroceryKnowledge.getInstance(context).getItemName(likeItems);
-            Cursor aisleCursor = getReadableDatabase().query(
-                    Contract.StoreCategory.TABLE_NAME,
-                    null,
-                    Contract.StoreCategory.COLUMN_NAME_CATEGORY + "='" + category + "'",
-                    null,
-                    null,
-                    null,
-                    null);
-            if(aisleCursor.moveToFirst()) {
-                aisle = aisleCursor.getString(aisleCursor.getColumnIndex(Contract.StoreCategory.COLUMN_NAME_AISLE));
-            }
-            aisleCursor.close();
+            category = GroceryKnowledge.getInstance(context).getItemName(likeItems);
         }
         likeItems.close();
+        return category;
+    }
+
+    public String getAisleForCategory(String category) {
+        String aisle = "-1";
+        if(category == null)
+            return aisle;
+        Cursor aisleCursor = getReadableDatabase().query(
+                Contract.StoreCategory.TABLE_NAME,
+                null,
+                Contract.StoreCategory.COLUMN_NAME_CATEGORY + "=?",
+                new String[] {category},
+                null,
+                null,
+                null);
+        if(aisleCursor.moveToFirst()) {
+            aisle = aisleCursor.getString(aisleCursor.getColumnIndex(Contract.StoreCategory.COLUMN_NAME_AISLE));
+        }
+        aisleCursor.close();
         return aisle;
     }
 }

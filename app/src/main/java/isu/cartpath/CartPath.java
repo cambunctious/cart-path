@@ -1,7 +1,6 @@
 package isu.cartpath;
 
 import android.app.Application;
-import android.database.sqlite.SQLiteDatabase;
 
 
 public class CartPath extends Application {
